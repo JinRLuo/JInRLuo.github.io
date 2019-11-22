@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="数组实现字典树(Trie)什么是字典树？Trie,又叫前缀树。通常用来存储字符串，树中的某个结点的子节点都有相同的前缀。根节点对应空字符串。适用于大量字符串的插入以及查找。 模板题 Trie字符统计维护一个字符串集合，支持两种操作：  “I x”向集合中插入一个字符串x； “Q x”询问一个字符串在集合中出现了多少次。  共有N个操作，输入的字符串总长度不超过 105，字符串仅包含小写英文字母。">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字典树(Trie)">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;10&#x2F;22&#x2F;%E5%AD%97%E5%85%B8%E6%A0%91-Trie&#x2F;index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="数组实现字典树(Trie)什么是字典树？Trie,又叫前缀树。通常用来存储字符串，树中的某个结点的子节点都有相同的前缀。根节点对应空字符串。适用于大量字符串的插入以及查找。 模板题 Trie字符统计维护一个字符串集合，支持两种操作：  “I x”向集合中插入一个字符串x； “Q x”询问一个字符串在集合中出现了多少次。  共有N个操作，输入的字符串总长度不超过 105，字符串仅包含小写英文字母。">
+<meta property="og:locale" content="zh-HK">
+<meta property="og:updated_time" content="2019-10-22T05:54:28.269Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2019/10/22/%E5%AD%97%E5%85%B8%E6%A0%91-Trie/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>字典树(Trie) | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>標籤</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分類</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>歸檔</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>關於</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-HK">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/22/%E5%AD%97%E5%85%B8%E6%A0%91-Trie/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JinRui Luo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          字典树(Trie)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2019-10-22 13:51:36 / 修改時間：13:54:28" itemprop="dateCreated datePublished" datetime="2019-10-22T13:51:36+08:00">2019-10-22</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="数组实现字典树-Trie"><a href="#数组实现字典树-Trie" class="headerlink" title="数组实现字典树(Trie)"></a>数组实现字典树(Trie)</h3><h4 id="什么是字典树？"><a href="#什么是字典树？" class="headerlink" title="什么是字典树？"></a>什么是字典树？</h4><p>Trie,又叫前缀树。通常用来存储字符串，树中的某个结点的子节点都有相同的前缀。根节点对应空字符串。<br><br>适用于大量字符串的插入以及查找。</p>
+<h4 id="模板题"><a href="#模板题" class="headerlink" title="模板题"></a>模板题</h4><hr>
+<h5 id="Trie字符统计"><a href="#Trie字符统计" class="headerlink" title="Trie字符统计"></a>Trie字符统计</h5><p>维护一个字符串集合，支持两种操作：</p>
+<ol>
+<li>“I x”向集合中插入一个字符串x；</li>
+<li>“Q x”询问一个字符串在集合中出现了多少次。</li>
+</ol>
+<p>共有N个操作，输入的字符串总长度不超过 105，字符串仅包含小写英文字母。</p>
+<h6 id="输入格式"><a href="#输入格式" class="headerlink" title="输入格式"></a>输入格式</h6><p>第一行包含整数N，表示操作数。<br>接下来N行，每行包含一个操作指令，指令为”I x”或”Q x”中的一种。</p>
+<h6 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a>输出格式</h6><p>对于每个询问指令”Q x”，都要输出一个整数作为结果，表示x在集合中出现的次数。每个结果占一行。</p>
+<h6 id="数据范围"><a href="#数据范围" class="headerlink" title="数据范围"></a>数据范围</h6><p>1≤N≤2*10^4</p>
+<h6 id="输入样例"><a href="#输入样例" class="headerlink" title="输入样例"></a>输入样例</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">5</span><br><span class="line">I abc</span><br><span class="line">Q abc</span><br><span class="line">Q ab</span><br><span class="line">I ab</span><br><span class="line">Q ab</span><br></pre></td></tr></table></figure>
+<h6 id="输出样例"><a href="#输出样例" class="headerlink" title="输出样例"></a>输出样例</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1</span><br><span class="line">0</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+<p>理解此代码，关键在于理解son数组的一维二维下标和son数组中存储的值的意义。</p>
+<h2 id=""><a href="#" class="headerlink" title=""></a><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> maxn = <span class="number">1e5</span>+<span class="number">10</span>;</span><br><span class="line"><span class="keyword">int</span> son[maxn][<span class="number">30</span>];<span class="comment">//一维下标表示父节点的idx值，二维下标为该字母对应的数字</span></span><br><span class="line"><span class="keyword">int</span> cnt[maxn];    <span class="comment">//cnt表示已该字符结尾的字符串数量，cnt下标为该字符串的idx值</span></span><br><span class="line"><span class="keyword">int</span> idx=<span class="number">0</span>;        <span class="comment">//从1开始为每个新结点分配idx，每个结点都有一个唯一的idx值，存在son数组中</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(<span class="built_in">string</span> s)</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> p=<span class="number">0</span>;      <span class="comment">//0代表根节点</span></span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;s[i];i++)&#123;</span><br><span class="line">		<span class="keyword">int</span> u=s[i]-<span class="string">'a'</span>;</span><br><span class="line">		<span class="keyword">if</span>(!son[p][u]) son[p][u]=++idx;</span><br><span class="line">		p = son[p][u];</span><br><span class="line">	&#125;</span><br><span class="line">	cnt[p]++;    <span class="comment">//字符串树加一</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">query</span><span class="params">(<span class="built_in">string</span> s)</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> p=<span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;s[i];i++)&#123;</span><br><span class="line">		<span class="keyword">int</span> u=s[i]-<span class="string">'a'</span>;</span><br><span class="line">		<span class="keyword">if</span>(!son[p][u]) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		p = son[p][u];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> cnt[p];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="built_in">string</span> s;</span><br><span class="line">	<span class="keyword">char</span> c;</span><br><span class="line">	<span class="keyword">int</span> n;</span><br><span class="line">	<span class="built_in">cin</span>&gt;&gt;n;</span><br><span class="line">	<span class="keyword">while</span>(n--)&#123;</span><br><span class="line">		<span class="built_in">cin</span>&gt;&gt;c&gt;&gt;s;</span><br><span class="line">		<span class="keyword">if</span>(c==<span class="string">'I'</span>)&#123;</span><br><span class="line">			insert(s);</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			<span class="built_in">cout</span> &lt;&lt; query(s) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></h2><h5 id="最大异或对"><a href="#最大异或对" class="headerlink" title="最大异或对"></a>最大异或对</h5><p>在给定的N个整数A1，A2……AN中选出两个进行xor（异或）运算，得到的结果最大是多少？</p>
+<h6 id="输入格式-1"><a href="#输入格式-1" class="headerlink" title="输入格式"></a>输入格式</h6><p>第一行输入一个整数N。<br><br>第二行输入N个整数A1～AN。</p>
+<h6 id="输出格式-1"><a href="#输出格式-1" class="headerlink" title="输出格式"></a>输出格式</h6><p>输出一个整数表示答案。</p>
+<h6 id="数据范围-1"><a href="#数据范围-1" class="headerlink" title="数据范围"></a>数据范围</h6><p>1≤N≤10^5,<br>0≤Ai&lt;2^31</p>
+<h6 id="输入样例："><a href="#输入样例：" class="headerlink" title="输入样例："></a>输入样例：</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">3</span><br><span class="line">1 2 3</span><br></pre></td></tr></table></figure>
+<h6 id="输出样例："><a href="#输出样例：" class="headerlink" title="输出样例："></a>输出样例：</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3</span><br></pre></td></tr></table></figure>
+<p>思路：<br><br>将每个整数的每个二进制位（从最高位开始存）存储在字典树中（A大于0，所以只需存储前31位，忽略符号位）。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> maxn = <span class="number">100010</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> maxm = <span class="number">31</span>*maxn;</span><br><span class="line"><span class="keyword">int</span> a[maxn];</span><br><span class="line"><span class="keyword">int</span> n;</span><br><span class="line"><span class="keyword">int</span> son[maxm][<span class="number">2</span>];</span><br><span class="line"><span class="keyword">int</span> idx;</span><br><span class="line"><span class="keyword">int</span> cnt[maxm];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(<span class="keyword">int</span> t)</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> p=<span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">30</span>;i&gt;=<span class="number">0</span>;i--)&#123;</span><br><span class="line">		<span class="keyword">int</span> u=(t&gt;&gt;i)&amp;<span class="number">1</span>;</span><br><span class="line">		<span class="keyword">if</span>(!son[p][u]) son[p][u]=++idx;</span><br><span class="line">		p=son[p][u];</span><br><span class="line">	&#125;</span><br><span class="line">	cnt[p]=t;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">search</span><span class="params">(<span class="keyword">int</span> t)</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> p=<span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">30</span>;i&gt;=<span class="number">0</span>;i--)&#123;</span><br><span class="line">		<span class="keyword">int</span> u=(t&gt;&gt;i)&amp;<span class="number">1</span>;</span><br><span class="line">		<span class="keyword">if</span>(u==<span class="number">1</span>)&#123;</span><br><span class="line">			<span class="keyword">if</span>(son[p][<span class="number">0</span>])&#123;</span><br><span class="line">				p=son[p][<span class="number">0</span>];</span><br><span class="line">			&#125;<span class="keyword">else</span></span><br><span class="line">				p=son[p][<span class="number">1</span>];</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			<span class="keyword">if</span>(son[p][<span class="number">1</span>])</span><br><span class="line">				p=son[p][<span class="number">1</span>];</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				p=son[p][<span class="number">0</span>];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> t^cnt[p];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> res=<span class="number">0</span>;</span><br><span class="line">	<span class="built_in">cin</span>&gt;&gt;n;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">		<span class="built_in">cin</span>&gt;&gt;a[i];</span><br><span class="line">		insert(a[i]);</span><br><span class="line">		res=max(search(a[i]),res);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; res &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/24/%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="next" title="简单数据结构">
+      简单数据结构 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概覽
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数组实现字典树-Trie"><span class="nav-number">1.</span> <span class="nav-text">数组实现字典树(Trie)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是字典树？"><span class="nav-number">1.1.</span> <span class="nav-text">什么是字典树？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#模板题"><span class="nav-number">1.2.</span> <span class="nav-text">模板题</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Trie字符统计"><span class="nav-number">1.2.1.</span> <span class="nav-text">Trie字符统计</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#输入格式"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">输入格式</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#输出格式"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">输出格式</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#数据范围"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">数据范围</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#输入样例"><span class="nav-number">1.2.1.4.</span> <span class="nav-text">输入样例</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#输出样例"><span class="nav-number">1.2.1.5.</span> <span class="nav-text">输出样例</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">12345678910111213141516171819202122232425262728293031323334353637383940414243#include &lt;iostream&gt;#include &lt;string&gt;using namespace std;const int maxn = 1e5+10;int son[maxn][30];//一维下标表示父节点的idx值，二维下标为该字母对应的数字int cnt[maxn];    //cnt表示已该字符结尾的字符串数量，cnt下标为该字符串的idx值int idx=0;        //从1开始为每个新结点分配idx，每个结点都有一个唯一的idx值，存在son数组中void insert(string s){	int p=0;      //0代表根节点	for(int i=0;s[i];i++){		int u=s[i]-&#39;a&#39;;		if(!son[p][u]) son[p][u]=++idx;		p = son[p][u];	}	cnt[p]++;    //字符串树加一}int query(string s){	int p=0;	for(int i=0;s[i];i++){		int u=s[i]-&#39;a&#39;;		if(!son[p][u]) return 0;		p = son[p][u];	}	return cnt[p];}int main(){	string s;	char c;	int n;	cin&gt;&gt;n;	while(n--){		cin&gt;&gt;c&gt;&gt;s;		if(c==&#39;I&#39;){			insert(s);		}else{			cout &lt;&lt; query(s) &lt;&lt; endl;		}	}	return 0;}</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#最大异或对"><span class="nav-number">0.0.1.</span> <span class="nav-text">最大异或对</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#输入格式-1"><span class="nav-number">0.0.1.1.</span> <span class="nav-text">输入格式</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#输出格式-1"><span class="nav-number">0.0.1.2.</span> <span class="nav-text">输出格式</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#数据范围-1"><span class="nav-number">0.0.1.3.</span> <span class="nav-text">数据范围</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#输入样例："><span class="nav-number">0.0.1.4.</span> <span class="nav-text">输入样例：</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#输出样例："><span class="nav-number">0.0.1.5.</span> <span class="nav-text">输出样例：</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JinRui Luo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JinRui Luo</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 強力驅動 v4.0.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主題 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.5.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

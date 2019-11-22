@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="利用数组实现单链表若用结构体实现单链表，在创建结点的时候会耗费大量时间。因此，在算法题中，可以利用数组来实现单链表优化时间。 模板题实现一个单链表，链表初始为空，支持三种操作：  向链表头插入一个数； 删除第k个插入的数后面的数； 在第k个插入的数后插入一个数  12345678910111213141516171819202122232425262728293031323334353637383">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简单数据结构">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;10&#x2F;24&#x2F;%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84&#x2F;index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="利用数组实现单链表若用结构体实现单链表，在创建结点的时候会耗费大量时间。因此，在算法题中，可以利用数组来实现单链表优化时间。 模板题实现一个单链表，链表初始为空，支持三种操作：  向链表头插入一个数； 删除第k个插入的数后面的数； 在第k个插入的数后插入一个数  12345678910111213141516171819202122232425262728293031323334353637383">
+<meta property="og:locale" content="zh-HK">
+<meta property="og:updated_time" content="2019-10-24T13:10:03.157Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2019/10/24/%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>简单数据结构 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>標籤</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分類</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>歸檔</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>關於</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-HK">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/24/%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JinRui Luo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          简单数据结构
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2019-10-24 21:07:06 / 修改時間：21:10:03" itemprop="dateCreated datePublished" datetime="2019-10-24T21:07:06+08:00">2019-10-24</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="利用数组实现单链表"><a href="#利用数组实现单链表" class="headerlink" title="利用数组实现单链表"></a>利用数组实现单链表</h4><p>若用结构体实现单链表，在创建结点的时候会耗费大量时间。因此，在算法题中，可以利用数组来实现单链表优化时间。</p>
+<h5 id="模板题"><a href="#模板题" class="headerlink" title="模板题"></a>模板题</h5><p>实现一个单链表，链表初始为空，支持三种操作：</p>
+<ol>
+<li>向链表头插入一个数；</li>
+<li>删除第k个插入的数后面的数；</li>
+<li>在第k个插入的数后插入一个数</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> maxn = <span class="number">100010</span>;</span><br><span class="line"><span class="keyword">int</span> head,idx;          <span class="comment">//idx代表下一个新结点在数组中的下标</span></span><br><span class="line"><span class="keyword">int</span> e[maxn],ne[maxn];  <span class="comment">//e数组存储结点信息   ne数组存储该节点的next指针</span></span><br><span class="line"><span class="keyword">int</span> m;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span>&#123;</span><br><span class="line">	head=<span class="number">-1</span>;           <span class="comment">//头指针初始化为-1</span></span><br><span class="line">	idx=<span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add_to_head</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123; <span class="comment">//头插法插入结点</span></span><br><span class="line">	e[idx]=x;</span><br><span class="line">	ne[idx]=head;</span><br><span class="line">	head=idx++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> k,<span class="keyword">int</span> x)</span></span>&#123;   <span class="comment">//从第k个插入的结点前插入</span></span><br><span class="line">	ne[idx]=ne[k];</span><br><span class="line">	e[idx]=x;</span><br><span class="line">	ne[k]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;      <span class="comment">//删除结点</span></span><br><span class="line">	ne[x]=ne[ne[x]];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> k,x;</span><br><span class="line">	<span class="keyword">char</span> c;</span><br><span class="line">	<span class="built_in">cin</span>&gt;&gt;m;</span><br><span class="line">	init();</span><br><span class="line">	<span class="keyword">while</span>(m--)&#123;</span><br><span class="line">		<span class="built_in">cin</span>&gt;&gt;c;</span><br><span class="line">		<span class="keyword">if</span>(c==<span class="string">'H'</span>)&#123;</span><br><span class="line">			<span class="built_in">cin</span>&gt;&gt;x;</span><br><span class="line">			add_to_head(x);</span><br><span class="line">		&#125;<span class="keyword">else</span> <span class="keyword">if</span>(c==<span class="string">'D'</span>)&#123;</span><br><span class="line">			<span class="built_in">cin</span>&gt;&gt;k;</span><br><span class="line">			<span class="keyword">if</span>(k==<span class="number">0</span>)</span><br><span class="line">				head=ne[head];</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				remove(k<span class="number">-1</span>);</span><br><span class="line">		&#125;<span class="keyword">else</span> <span class="keyword">if</span>(c==<span class="string">'I'</span>)&#123;</span><br><span class="line">			<span class="built_in">cin</span>&gt;&gt;k&gt;&gt;x;</span><br><span class="line">			add(k<span class="number">-1</span>,x);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=head;i!=<span class="number">-1</span>;i=ne[i])&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; e[i] &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="利用数组实现双链表"><a href="#利用数组实现双链表" class="headerlink" title="利用数组实现双链表"></a>利用数组实现双链表</h4><p>双链表的操作与单链表类似，只是多了一个数组用于存储前驱结点的指针。</p>
+<h5 id="模板题-1"><a href="#模板题-1" class="headerlink" title="模板题"></a>模板题</h5><p>实现一个双链表，双链表初始为空，支持5种操作：</p>
+<ol>
+<li>在最左侧插入一个数；</li>
+<li>在最右侧插入一个数；</li>
+<li>将第k个插入的数删除；</li>
+<li>在第k个插入的数左侧插入一个数；</li>
+<li>在第k个插入的数右侧插入一个数</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> maxn = <span class="number">100010</span>;</span><br><span class="line"><span class="keyword">int</span> l[maxn],r[maxn],e[maxn];</span><br><span class="line"><span class="keyword">int</span> m,idx;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span>&#123;</span><br><span class="line">	r[<span class="number">0</span>]=<span class="number">1</span>;    <span class="comment">//头指针置1  尾指针置0</span></span><br><span class="line">	l[<span class="number">1</span>]=<span class="number">0</span>;</span><br><span class="line">	idx=<span class="number">2</span>;     <span class="comment">//0和1分别为头指针和尾指针，所以第一个结点应该从2开始</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> k,<span class="keyword">int</span> x)</span></span>&#123;  <span class="comment">//从第k个插入的点右边插入新结点</span></span><br><span class="line">	e[idx]=x;</span><br><span class="line">	l[idx]=k;</span><br><span class="line">	r[idx]=r[k];</span><br><span class="line">	l[r[k]]=idx;</span><br><span class="line">	r[k]=idx++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">(<span class="keyword">int</span> k)</span></span>&#123;     <span class="comment">//删除结点</span></span><br><span class="line">	r[l[k]]=r[k];</span><br><span class="line">	l[r[k]]=l[k];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="built_in">string</span> s;</span><br><span class="line">	<span class="keyword">int</span> k,x;</span><br><span class="line">	init();</span><br><span class="line">	<span class="built_in">cin</span>&gt;&gt;m;</span><br><span class="line">	<span class="keyword">while</span>(m--)&#123;</span><br><span class="line">		<span class="built_in">cin</span>&gt;&gt;s;</span><br><span class="line">		<span class="keyword">if</span>(s==<span class="string">"L"</span>)&#123;</span><br><span class="line">			<span class="built_in">cin</span>&gt;&gt;x;</span><br><span class="line">			add(<span class="number">0</span>,x);</span><br><span class="line">		&#125;<span class="keyword">else</span> <span class="keyword">if</span>(s==<span class="string">"R"</span>)&#123;</span><br><span class="line">			<span class="built_in">cin</span>&gt;&gt;x;</span><br><span class="line">			add(l[<span class="number">1</span>],x);    <span class="comment">//看作从尾结点的上一个结点右侧插入一个新结点</span></span><br><span class="line">		&#125;<span class="keyword">else</span> <span class="keyword">if</span>(s==<span class="string">"D"</span>)&#123;</span><br><span class="line">			<span class="built_in">cin</span>&gt;&gt;k;</span><br><span class="line">			remove(k+<span class="number">1</span>);</span><br><span class="line">		&#125;<span class="keyword">else</span> <span class="keyword">if</span>(s==<span class="string">"IL"</span>)&#123;</span><br><span class="line">			<span class="built_in">cin</span>&gt;&gt;k&gt;&gt;x;</span><br><span class="line">			add(l[k+<span class="number">1</span>],x);</span><br><span class="line">		&#125;<span class="keyword">else</span> <span class="keyword">if</span>(s==<span class="string">"IR"</span>)&#123;</span><br><span class="line">			<span class="built_in">cin</span>&gt;&gt;k&gt;&gt;x;</span><br><span class="line">			add(k+<span class="number">1</span>,x);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=r[<span class="number">0</span>];i!=<span class="number">1</span>;i=r[i])&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; e[i] &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/22/%E5%AD%97%E5%85%B8%E6%A0%91-Trie/" rel="prev" title="字典树(Trie)">
+      <i class="fa fa-chevron-left"></i> 字典树(Trie)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/11/22/%E7%BB%84%E5%90%88%E6%95%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E6%B1%82%E6%B3%95/" rel="next" title="组合数的常见求法">
+      组合数的常见求法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概覽
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#利用数组实现单链表"><span class="nav-number">1.</span> <span class="nav-text">利用数组实现单链表</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#模板题"><span class="nav-number">1.1.</span> <span class="nav-text">模板题</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#利用数组实现双链表"><span class="nav-number">2.</span> <span class="nav-text">利用数组实现双链表</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#模板题-1"><span class="nav-number">2.1.</span> <span class="nav-text">模板题</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JinRui Luo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JinRui Luo</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 強力驅動 v4.0.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主題 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.5.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
